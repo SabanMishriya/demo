@@ -12,6 +12,10 @@ add_executable(led_test
 
 target_include_directories(led_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
+set_target_properties(led_test PROPERTIES
+    C_COMPILER ${CMAKE_C_COMPILER}
+)
+
 target_compile_options(led_test PRIVATE -std=c99 -Wall -Wextra)
 
 target_link_options(led_test PRIVATE)

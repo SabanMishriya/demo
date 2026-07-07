@@ -1,6 +1,5 @@
 #include "led.h"
-
-extern unsigned char led_state;
+#include "../src/led.c"
 
 static int check(int condition, const char *message)
 {
