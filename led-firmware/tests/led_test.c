@@ -1,24 +1,42 @@
-#include <assert.h>
 #include "led.h"
 
-#include "../src/led.c"
+extern unsigned char led_state;
+
+static int check(int condition, const char *message)
+{
+    if (!condition) {
+        return 1;
+    }
+    (void)message;
+    return 0;
+}
 
 int main(void)
 {
     led_init();
-    assert(led_state == 0);
+    if (check(led_state == 0, "initial state")) {
+        return 1;
+    }
 
     led_on();
-    assert(led_state == 1);
+    if (check(led_state == 1, "on state")) {
+        return 1;
+    }
 
     led_toggle();
-    assert(led_state == 0);
+    if (check(led_state == 0, "toggle off")) {
+        return 1;
+    }
 
     led_toggle();
-    assert(led_state == 1);
+    if (check(led_state == 1, "toggle on")) {
+        return 1;
+    }
 
     led_off();
-    assert(led_state == 0);
+    if (check(led_state == 0, "off state")) {
+        return 1;
+    }
 
     return 0;
 }
