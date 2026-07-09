@@ -2,11 +2,24 @@ pipeline {
 
     agent any
 
+    options {
+        timestamps()
+        timeout(time: 1, unit: 'HOURS')
+    }
+
     tools {
         maven 'Maven'
     }
 
     stages {
+
+        stage('Start') {
+            steps {
+                echo "=========================================="
+                echo "Build Started at: ${new Date()}"
+                echo "=========================================="
+            }
+        }
 
         stage('Checkout') {
             steps {
@@ -20,9 +33,9 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
-                sh 'cd vehicle-parking && mvn test'
+                sh 'cd vehicle-parking && mvn test -Dtest=**/*Test.java'
             }
         }
 
@@ -35,6 +48,7 @@ pipeline {
         stage('Archive') {
             steps {
                 archiveArtifacts artifacts: 'vehicle-parking/target/*.jar'
+                archiveArtifacts artifacts: 'vehicle-parking/target/surefire-reports/**', allowEmptyArchive: true
             }
         }
     }
@@ -42,6 +56,24 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true, testResults: 'vehicle-parking/target/surefire-reports/*.xml'
+            publishHTML([
+                reportDir: 'vehicle-parking/target/surefire-reports',
+                reportFiles: 'index.html',
+                reportName: 'Unit Test Report',
+                keepAll: true,
+                allowMissing: true
+            ])
+            echo "=========================================="
+            echo "Test Results Archived and Published"
+            echo "=========================================="
+            echo "Build Finished at: ${new Date()}"
+            echo "=========================================="
+        }
+        success {
+            echo "Build SUCCESS"
+        }
+        failure {
+            echo "Build FAILED"
         }
     }
 }
