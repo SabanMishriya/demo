@@ -16,32 +16,32 @@ pipeline {
 
         stage('Compile') {
             steps {
-                sh 'mvn clean compile'
+                sh 'cd vehicle-parking && mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh 'cd vehicle-parking && mvn test'
             }
         }
 
         stage('Package') {
             steps {
-                sh 'mvn package'
+                sh 'cd vehicle-parking && mvn package'
             }
         }
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar'
+                archiveArtifacts artifacts: 'vehicle-parking/target/*.jar'
             }
         }
     }
 
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            junit allowEmptyResults: true, testResults: 'vehicle-parking/target/surefire-reports/*.xml'
         }
     }
 }
