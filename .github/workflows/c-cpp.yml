@@ -1,23 +1,47 @@
-name: C/C++ CI
+name: Shell Script CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display repository files
+        run: |
+          pwd
+          ls -la
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Check shell-script syntax
+        run: |
+          find . -type f -name "*.sh" -print0 |
+          while IFS= read -r -d '' file; do
+            echo "Checking syntax: $file"
+            bash -n "$file"
+          done
+
+      - name: Run ShellCheck
+        run: |
+          find . -type f -name "*.sh" -print0 |
+          while IFS= read -r -d '' file; do
+            echo "Linting: $file"
+            shellcheck "$file"
+          done
+
+      - name: Run array script
+        run: |
+          chmod +x array.sh
+          ./array.sh one two three
