@@ -11,6 +11,7 @@ on:
       - '.github/workflows/dotnet-console.yml'
   workflow_dispatch:
 
+
 jobs:
   build-and-run:
     runs-on: self-hosted
